@@ -116,15 +116,16 @@
     }
 
     FlowPoint.prototype.forceOnCoord = function(x, y) {
-      var angle, dx, dy, orthogonality, ref, unitVector;
+      var angle, angleDelta, dx, dy, forceAngle, ref, unitVector;
       if (this.charge() === 0) {
         return [0, 0];
       }
       ref = VectorMath.vectorBetween(this.x, this.y, x, y), dx = ref[0], dy = ref[1];
       angle = VectorMath.angleForVector(dx, dy);
-      unitVector = VectorMath.unitVectorForAngle(angle);
-      orthogonality = Math.abs(Math.sin(angle - this.flowAngle));
-      return VectorMath.scaleVector(unitVector, this.charge() * orthogonality * VectorMath.invSquareMagnitudeBetween(this.x, this.y, x, y));
+      angleDelta = VectorMath.normalizeAngle(angle - this.flowAngle);
+      forceAngle = (angleDelta < Math.PI ? Math.PI : -Math.PI) / 2 + this.flowAngle;
+      unitVector = VectorMath.unitVectorForAngle(forceAngle);
+      return VectorMath.scaleVector(unitVector, this.charge() * VectorMath.invSquareMagnitudeBetween(this.x, this.y, x, y));
     };
 
     FlowPoint.prototype.flowOnCoord = function(x, y) {
@@ -137,7 +138,7 @@
     };
 
     FlowPoint.prototype.charge = function() {
-      return 0.05 * Field.pointCharge * FlowPoint.framesPerFlowPoint;
+      return 0.01 * Field.pointCharge * FlowPoint.framesPerFlowPoint;
     };
 
     FlowPoint.prototype.flow = function() {
@@ -414,6 +415,10 @@
       }
       ref = VectorMath.vectorBetween(xa, ya, xb, yb), dx = ref[0], dy = ref[1];
       return 1 / (dx * dx + dy * dy);
+    };
+
+    VectorMath.normalizeAngle = function(angle) {
+      return (angle + 2 * Math.PI) % (2 * Math.PI);
     };
 
     return VectorMath;

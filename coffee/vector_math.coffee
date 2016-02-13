@@ -34,6 +34,8 @@ class @VectorMath
     [dx, dy] = VectorMath.vectorBetween(xa, ya, xb, yb)
 
     1 / (dx * dx + dy * dy)
+  @normalizeAngle: (angle) ->
+    (angle + 2 * Math.PI) % (2 * Math.PI)
 
 Array::preduce = (initial, func) ->
   @reduce(func, initial)
